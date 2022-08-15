@@ -3,6 +3,8 @@ package img
 import (
 	"fmt"
 	"gocv.io/x/gocv"
+	"image"
+	"image/color"
 )
 
 // ROI 绘制感兴趣的区域
@@ -26,7 +28,14 @@ func ShowImg(title string, img gocv.Mat) {
 	defer window.Close()
 	window.IMShow(img)
 	// 等待多少毫秒，为0则表示一直阻塞
-	gocv.WaitKey(0)
+	for {
+		key := gocv.WaitKey(100)
+		if 27 == key {
+			fmt.Println("退出...")
+			break
+		}
+	}
+
 }
 
 // ReadAndShowImg 读取并显示图片
@@ -109,4 +118,67 @@ func PixelVisit(path string) {
 	newImg.AddUChar(50)
 	// 显示新图像
 	ShowImg("新图像", newImg)
+}
+
+// ColorStyle 颜色转换
+func ColorStyle(path string) {
+	img := ReadImg(path)
+	window := gocv.NewWindow("颜色转换")
+	defer window.Close()
+	window.IMShow(img)
+	// 等待多少毫秒，为0则表示一直阻塞
+	for {
+		key := gocv.WaitKey(100)
+		if 27 == key {
+			fmt.Println("退出...")
+			break
+		}
+		// 点击字母上的数字键 1的值为49
+		if 49 == key {
+			mat := gocv.NewMat()
+			gocv.ApplyColorMap(img, &mat, gocv.ColormapAutumn)
+			window.IMShow(mat)
+		}
+		// 点击字母上的数字键 1的值为49
+		if 50 == key {
+			mat := gocv.NewMat()
+			// 颜色风格
+			gocv.ApplyColorMap(img, &mat, gocv.ColormapBone)
+			window.IMShow(mat)
+		}
+	}
+}
+
+// DrawRectangle 绘制矩形
+func DrawRectangle() {
+	// 创建空白的mat
+	mat := gocv.Zeros(256, 256, gocv.MatTypeCV8UC3)
+	// 创建矩形
+	rect := image.Rect(50, 50, 100, 100)
+	// 初始化颜色
+	blue := color.RGBA{R: 1, G: 255}
+	gocv.Rectangle(&mat, rect, blue, -1)
+	ShowImg("矩形", mat)
+}
+
+// SplitAndMerge 通道分离及合并
+func SplitAndMerge(path string) {
+	img := ReadImg(path)
+	// 通道分离
+	mats := gocv.Split(img)
+	for i := range mats {
+		mat := mats[i]
+		var array = make([]gocv.Mat, 3)
+		for j, _ := range array {
+			if i == j {
+				array[j] = mat
+			} else {
+				array[j] = gocv.Zeros(mat.Rows(), mat.Cols(), mat.Type())
+			}
+		}
+		// 通道合并
+		newMat := gocv.NewMat()
+		gocv.Merge(array, &newMat)
+		ShowImg("合并", newMat)
+	}
 }

@@ -69,3 +69,43 @@ func WriteImg(namePath string, img gocv.Mat) {
 	}
 }
 ```
+
+### 绘制矩形`Rectangle`
+```go
+// DrawRectangle 绘制矩形
+func DrawRectangle() {
+	// 创建空白的mat
+	mat := gocv.Zeros(256, 256, gocv.MatTypeCV8UC3)
+	// 创建矩形
+	rect := image.Rect(50, 50, 100, 100)
+	// 初始化颜色
+	blue := color.RGBA{R: 1, G: 255}
+	gocv.Rectangle(&mat, rect, blue, 1)
+	ShowImg("矩形", mat)
+}
+```
+
+### 通道分离`Split`和通道合并`Merge`
+```go
+// SplitAndMerge 通道分离及合并
+func SplitAndMerge(path string) {
+	img := ReadImg(path)
+	// 通道分离
+	mats := gocv.Split(img)
+	for i := range mats {
+		mat := mats[i]
+		var array = make([]gocv.Mat, 3)
+		for j, _ := range array {
+			if i == j {
+				array[j] = mat
+			} else {
+				array[j] = gocv.Zeros(mat.Rows(), mat.Cols(), mat.Type())
+			}
+		}
+		// 通道合并
+		newMat := gocv.NewMat()
+		gocv.Merge(array, &newMat)
+		ShowImg("合并", newMat)
+	}
+}
+```
