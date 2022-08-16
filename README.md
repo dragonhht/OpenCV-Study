@@ -70,6 +70,8 @@ func WriteImg(namePath string, img gocv.Mat) {
 }
 ```
 
+### 图像叠加`AddWeighted`
+
 ### 绘制矩形`Rectangle`
 ```go
 // DrawRectangle 绘制矩形
@@ -82,6 +84,61 @@ func DrawRectangle() {
 	blue := color.RGBA{R: 1, G: 255}
 	gocv.Rectangle(&mat, rect, blue, 1)
 	ShowImg("矩形", mat)
+}
+```
+
+### 绘制圆形`Circle`
+```go
+// DrawCircle 绘制圆形
+func DrawCircle() {
+	// 创建空白的mat
+	mat := gocv.Zeros(256, 256, gocv.MatTypeCV8UC3)
+	defer mat.Close()
+	// 右下角位置
+	point := image.Point{X: 100, Y: 100}
+	// 初始化颜色
+	blue := color.RGBA{R: 1, G: 255}
+	// 绘制
+	gocv.Circle(&mat, point, 100, blue, -1)
+	ShowImg("圆形", mat)
+}
+```
+
+### 绘制线条`Line`
+```go
+// DrawLine 绘制线条
+func DrawLine() {
+	// 创建空白的mat
+	mat := gocv.Zeros(256, 256, gocv.MatTypeCV8UC3)
+	defer mat.Close()
+	// 左下角坐标
+	p := image.Point{X: 10, Y: 10}
+	// 右下角位置
+	p1 := image.Point{X: 100, Y: 100}
+	// 初始化颜色
+	blue := color.RGBA{R: 1, G: 255}
+	// 绘制
+	gocv.Line(&mat, p, p1, blue, 1)
+	ShowImg("直线", mat)
+}
+```
+
+### 绘制椭圆`Ellipse`
+```go
+// DrawEllipse 绘制椭圆
+func DrawEllipse() {
+	// 创建空白的mat
+	mat := gocv.Zeros(256, 256, gocv.MatTypeCV8UC3)
+	defer mat.Close()
+	// 长轴半径100，短轴半径50
+	p := image.Point{X: 100, Y: 50}
+	// 中心坐标
+	center := image.Point{X: 100, Y: 100}
+	// 初始化颜色
+	blue := color.RGBA{R: 1, G: 255}
+	// 绘制
+	gocv.Ellipse(&mat, center, p, 90, 0, 360, blue, -1)
+	ShowImg("椭圆", mat)
 }
 ```
 
