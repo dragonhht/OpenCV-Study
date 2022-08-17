@@ -207,6 +207,26 @@ func DrawEllipse() {
 	ShowImg("椭圆", mat)
 }
 
+// DrawPolyLines 绘制多边形
+func DrawPolyLines() {
+	// 创建空白的mat
+	mat := gocv.Zeros(256, 256, gocv.MatTypeCV8UC3)
+	defer mat.Close()
+	vector := gocv.NewPointsVector()
+	pointVector := gocv.NewPointVector()
+	pointVector.Append(image.Point{X: 100, Y: 50})
+	pointVector.Append(image.Point{X: 100, Y: 100})
+	pointVector.Append(image.Point{X: 50, Y: 100})
+	vector.Append(pointVector)
+	// 初始化颜色
+	blue := color.RGBA{R: 1, G: 255}
+	gocv.Polylines(&mat, vector, true, blue, 1)
+	ShowImg("多边形", mat)
+	mat2 := gocv.Zeros(256, 256, gocv.MatTypeCV8UC3)
+	gocv.DrawContours(&mat2, vector, -1, blue, 1)
+	ShowImg("多变形2", mat2)
+}
+
 // SplitAndMerge 通道分离及合并
 func SplitAndMerge(path string) {
 	img := ReadImg(path)
