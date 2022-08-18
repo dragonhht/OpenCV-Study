@@ -249,3 +249,66 @@ func SplitAndMerge(path string) {
 		ShowImg("合并", newMat)
 	}
 }
+
+// SelectRegion 区域选择
+func SelectRegion(path string) {
+	img := ReadImg(path)
+	window := gocv.NewWindow("区域绘制")
+	defer img.Close()
+	defer window.Close()
+	window.IMShow(img)
+	// 绘制区域
+	rectangle := window.SelectROI(img)
+	mat := img.Clone()
+	defer mat.Close()
+	region := mat.Region(rectangle)
+	ShowImg("截取图像", region)
+}
+
+// ImgResize 图像缩放
+func ImgResize(path string) {
+	img := ReadImg(path)
+	defer img.Close()
+	// 缩小为一半
+	size := image.Point{
+		X: img.Cols() / 2,
+		Y: img.Rows() / 2,
+	}
+	mat := gocv.NewMat()
+	defer mat.Close()
+	gocv.Resize(img, &mat, size, 0, 0, gocv.InterpolationLinear)
+	fmt.Printf("%v, %v, %v, %v\n", img.Rows(), img.Cols(), mat.Rows(), mat.Cols())
+	ShowImg("缩放", mat)
+}
+
+// ImgFlip 图像翻转
+func ImgFlip(path string) {
+	img := ReadImg(path)
+	defer img.Close()
+	mat := gocv.NewMat()
+	defer mat.Close()
+	// 0:上下翻转, 1:左右翻转，-1:对角线翻转
+	gocv.Flip(img, &mat, 1)
+	ShowImg("翻转", mat)
+}
+
+// ImgRotate 图像旋转
+func ImgRotate(path string) {
+	img := ReadImg(path)
+	defer img.Close()
+	// 中心位置
+	center := image.Point{
+		X: img.Cols() / 2,
+		Y: img.Rows() / 2,
+	}
+	mat := gocv.GetRotationMatrix2D(center, 45, 1)
+	defer mat.Close()
+	mat2 := gocv.NewMat()
+	defer mat2.Close()
+	size := image.Point{
+		X: img.Cols(),
+		Y: img.Rows(),
+	}
+	gocv.WarpAffine(img, &mat2, mat, size)
+	ShowImg("旋转", mat2)
+}
