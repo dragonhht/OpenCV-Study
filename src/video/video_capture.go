@@ -3,6 +3,7 @@ package video
 import (
 	"fmt"
 	"gocv.io/x/gocv"
+	"image/color"
 )
 
 // VideoCaptureDevice 调用摄像头
@@ -79,4 +80,48 @@ func VideoOperation(path string) {
 			break
 		}
 	}
+}
+
+// FaceDetection 人脸检测
+func FaceDetection(xmlPath string) {
+	// 调用摄像头视频
+	webcam, _ := gocv.VideoCaptureDevice(0)
+	img := gocv.NewMat()
+	window := gocv.NewWindow("人脸检测")
+	defer webcam.Close()
+	defer img.Close()
+	defer window.Close()
+	// 绘制颜色
+	blue := color.RGBA{B: 255}
+	// 加载 classifier
+	classifier := gocv.NewCascadeClassifier()
+	defer classifier.Close()
+	if !classifier.Load(xmlPath) {
+		fmt.Println("加载xml失败")
+		return
+	}
+
+	mat := gocv.NewMat()
+	defer mat.Close()
+
+	for {
+		webcam.Read(&img)
+		if img.Empty() {
+			continue
+		}
+		// 翻转
+		gocv.Flip(img, &mat, 1)
+		// 检测人脸
+		rects := classifier.DetectMultiScale(mat)
+		// 绘制
+		for _, rect := range rects {
+			gocv.Rectangle(&mat, rect, blue, 3)
+		}
+		window.IMShow(mat)
+		key := window.WaitKey(24)
+		if key == 27 {
+			break
+		}
+	}
+
 }

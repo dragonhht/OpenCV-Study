@@ -312,3 +312,36 @@ func ImgRotate(path string) {
 	gocv.WarpAffine(img, &mat2, mat, size)
 	ShowImg("旋转", mat2)
 }
+
+// ImageFill 图像填充
+func ImageFill(path string) {
+	img := ReadImg(path)
+	defer img.Close()
+	mat := gocv.NewMat()
+	defer mat.Close()
+	blue := color.RGBA{B: 255}
+	gocv.CopyMakeBorder(img, &mat, 150, 150, 150, 150, gocv.BorderReplicate, blue)
+	ShowImg("图像填充", mat)
+}
+
+// ImageSmooth 图片平滑处理
+func ImageSmooth(path string) {
+	img := ReadImg(path)
+	defer img.Close()
+	mat := gocv.NewMat()
+	defer mat.Close()
+	// 均值滤波
+	size := image.Point{X: 3, Y: 3}
+	gocv.Blur(img, &mat, size)
+	ShowImg("均值滤波", mat)
+	// 方框滤波
+	gocv.BoxFilter(img, &mat, -1, size)
+	ShowImg("方框滤波", mat)
+	// 高斯滤波
+	size = image.Point{X: 5, Y: 5}
+	gocv.GaussianBlur(img, &mat, size, 1, 1, gocv.BorderReflect)
+	ShowImg("高斯滤波", mat)
+	// 中值滤波
+	gocv.MedianBlur(img, &mat, 5)
+	ShowImg("中值滤波", mat)
+}
